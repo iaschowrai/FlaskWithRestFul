@@ -1,0 +1,19 @@
+project/
+├── frontend/
+│   ├── static/
+│   │   ├── css/
+│   │   │   ├── main.css
+│   │   ├── js/
+│   │   │   ├── main.js
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── login.html
+│   │   ├── register.html
+│   ├── __init__.py
+│   ├── forms.py
+│   ├── routes.py
+├── backend/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes.py
+├── run.py
