@@ -23,12 +23,12 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Register')
 
 class JobForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
+    title = StringField('Title', validators=[validators.DataRequired()])
     salary = DecimalField('Salary')
-    company = StringField('Company', validators=[DataRequired()])
-    category = StringField('Category', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[DataRequired()])
-    contact = StringField('Contact', validators=[DataRequired()])
+    company = StringField('Company', validators=[validators.DataRequired()])
+    category = StringField('Category', validators=[validators.DataRequired()])
+    description = TextAreaField('Description', validators=[validators.DataRequired()])
+    contact = StringField('Contact', validators=[validators.DataRequired()])
     submit = SubmitField('AddPost')
 
 
