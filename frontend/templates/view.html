@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container" style="margin-top:50px;">
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            <div class="col-md-8">
+                <div class="border">
+                    <h1 class="mt-4 mb-3 title">{{ title }}</h1>
+                    <div class="text-muted mb-2">
+                        Category: {{ category }} &nbsp;&nbsp;&nbsp;&nbsp;
+                        Salary: {{ salary }}
+                    </div>
+                    <div class="text-muted mb-2"><small>
+                            Company: {{ company }} &nbsp;&nbsp;&nbsp;&nbsp;
+                            email: {{ email }}
+                            Created_at: {{ create_at }}
+
+                        </small>
+                    </div>
+                    <div>
+                        <p class="lead">{{ description }}</p>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
