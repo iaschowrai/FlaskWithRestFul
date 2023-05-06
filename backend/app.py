@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource, fields, marshal_with,reqparse, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, validators,SelectField,SubmitField
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user,UserMixin
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum
 
@@ -54,6 +54,14 @@ login_fields = {
     'id': fields.Integer,
     'username': fields.String,
     'password': fields.String,
+    'user_type': fields.String
+
+}
+
+profile_fields={
+    'id': fields.Integer,
+    'username': fields.String,
+    'user_type': fields.String
 }
 
 register_fields = {
@@ -74,13 +82,32 @@ jobs_fields = {
     'filled': fields.Boolean
 }
 
+# class ALLJobsResource(Resource):
+#     def get(self):
+#         job_posts = Job.query.filter_by(filled=False).all()
+#         all_job_posts ={}
+#         for post in job_posts:
+#             all_job_posts[post.id] = {'title' : post.title, 'salary': post.salary, 'company' : post.company, 'category': str(post.category), 'description' : post.description, 'email': post.email,'filled':post.filled}
+#         return jsonify(all_job_posts)
+
 class ALLJobsResource(Resource):
     def get(self):
         job_posts = Job.query.filter_by(filled=False).all()
-        all_job_posts ={}
+        all_job_posts = []
         for post in job_posts:
-            all_job_posts[post.id] = {'title' : post.title, 'salary': post.salary, 'company' : post.company, 'category': str(post.category), 'description' : post.description, 'email': post.email,'filled':post.filled}
+            job_post = {
+                'id': post.id,
+                'title': post.title,
+                'salary': post.salary,
+                'company': post.company,
+                'category': str(post.category),
+                'description': post.description,
+                'email': post.email,
+                'filled': post.filled
+            }
+            all_job_posts.append(job_post)
         return jsonify(all_job_posts)
+
     
     @marshal_with(jobs_fields)
     def post(self):
@@ -107,6 +134,12 @@ class JobsResource(Resource):
         if job is None:
             return {'error': 'Job not found'}, 404
         return job
+    
+    # def get(self,search):
+    #     job = Job.query.filter_by(id=job_id).first()
+    #     if job is None:
+    #         return {'error': 'Job not found'}, 404
+    #     return job
 
     
     @marshal_with(jobs_fields)
@@ -127,9 +160,19 @@ class JobsResource(Resource):
         job = Job.query.filter_by(id=job_id).first()
         db.session.delete(job)
         db.session.commit()
-        return 'ToDo Deleted', 204
+        return 'Job Deleted', 204
 
-class LoginResource(Resource):
+
+class ProfileResource(Resource):
+    @marshal_with(profile_fields)
+    def get(self,user_id):
+        user = User.query.filter_by(id=user_id).first()
+        if user is None:
+            return {'error': 'Job not found'}, 404
+        return user
+    
+
+class LoginResource(Resource):   
     @marshal_with(login_fields)
     def post(self):
         parser = reqparse.RequestParser()
@@ -140,7 +183,9 @@ class LoginResource(Resource):
         # Check if the user exists and the password is correct
         if not user or not check_password_hash(user.password, args['password']):
             return {'message': 'Invalid username or password'}, 401
-        return user, 200
+        # Return user information along with the user_type key
+        return {'id': user.id, 'username': user.username, 'user_type': user.user_type}, 200
+
 
 class RegisterResource(Resource):
     @marshal_with(register_fields)
@@ -162,9 +207,11 @@ class RegisterResource(Resource):
 
 api.add_resource(ALLJobsResource, '/api/jobs')
 api.add_resource(JobsResource, '/api/jobs/<int:job_id>')
+# api.add_resource(JobsResource, '/api/jobs/<search>')
 
 api.add_resource(LoginResource, '/api/login')
 api.add_resource(RegisterResource, '/api/register')
+api.add_resource(ProfileResource, '/api/profile/<int:user_id>')
 
 if __name__ == '__main__':
     # db.create_all()
