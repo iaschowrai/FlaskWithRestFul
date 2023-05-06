@@ -31,6 +31,8 @@ class JobForm(FlaskForm):
     email = EmailField('Email', validators=[validators.DataRequired()])
     submit = SubmitField('AddPost')
 
+
+
 @app.route('/jobs', methods=['GET', 'POST'])
 def addpost():
     form = JobForm()
@@ -51,18 +53,26 @@ def addpost():
 
 @app.route('/jobs/<int:job_id>', methods=['GET','PUT', 'DELETE'])
 def view(job_id):
+    # if request.method == 'GET':
+    #     response = requests.post('http://localhost:5001/api/jobs/'+ f'/{job_id}', json={'filled': True })
+    # return render_template('view.html', title= 'view', form=response)
     if request.method == 'GET':
-        response = requests.post('http://localhost:5001/api/jobs/'+ f'/{job_id}', json={'filled': True })
-    return render_template('view.html', title= 'view', form=response)
-                             
+        response = requests.get(f'http://localhost:5001/api/jobs/{job_id}')
+        job_data = response.json() # extract JSON data from response object
+        return render_template('view.html', title='Job Details', job=job_data)
+    elif request.method == 'PUT':
+        # handle PUT request
+        pass
+    elif request.method == 'DELETE':
+        # handle DELETE request
+        pass                         
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    response = requests.get('http://localhost:5001/api/jobs')
-    jobs = response.json()
-    print(jobs) # print the jobs variable to console
-
-    return render_template('index.html', title='title', form = jobs) 
+    if request.method == 'GET':
+        response = requests.get('http://localhost:5001/api/jobs')
+        jobs = response.json()
+        return render_template('index.html', title='title', forms = jobs) 
 
 # @app.route('/aboutme', method=['GET', 'POST'])
 # def aboutme():
